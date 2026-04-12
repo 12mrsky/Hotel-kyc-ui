@@ -1,32 +1,74 @@
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+
+// class AuthService {
+//   // Use your computer's IP or localhost for Chrome
+//   // static const String baseUrl = "https://localhost:7295/api/Auth";
+//  final url = Uri.parse("${ApiService.baseUrl}/Auth/login");
+
+//   Future<http.Response> register(String name, String email, String password, String phone) async {
+//     return await http.post(
+//       Uri.parse('$baseUrl/register'),
+//       headers: {"Content-Type": "application/json"},
+//       body: jsonEncode({
+//         "fullName": name,
+//         "email": email,
+//         "password": password, 
+//         "phoneNumber": phone,
+//       }),
+//     );
+//   }
+
+// // lib/services/auth_service.dart
+// Future<http.Response> login(String username, String password) async {
+//   return await http.post(
+//     Uri.parse('$baseUrl/login'),
+//     headers: {"Content-Type": "application/json"},
+//     body: jsonEncode({
+//       "fullName": username, // This must match the C# property name
+//       "password": password,
+//     }),
+//   );
+// }
+// }
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api_service.dart'; // ✅ IMPORTANT
 
 class AuthService {
-  // Use your computer's IP or localhost for Chrome
-  static const String baseUrl = "https://localhost:7295/api/Auth";
 
-  Future<http.Response> register(String name, String email, String password, String phone) async {
+  // OLD (keep commented)
+  // static const String baseUrl = "https://localhost:7295/api/Auth";
+
+  // NEW ✅
+  static String get baseUrl => "${ApiService.baseUrl}/Auth";
+
+  // 🔐 REGISTER
+  Future<http.Response> register(
+      String name, String email, String password, String phone) async {
+
     return await http.post(
       Uri.parse('$baseUrl/register'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "fullName": name,
         "email": email,
-        "password": password, 
+        "password": password,
         "phoneNumber": phone,
       }),
     );
   }
 
-// lib/services/auth_service.dart
-Future<http.Response> login(String username, String password) async {
-  return await http.post(
-    Uri.parse('$baseUrl/login'),
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({
-      "fullName": username, // This must match the C# property name
-      "password": password,
-    }),
-  );
-}
+  // 🔐 LOGIN
+  Future<http.Response> login(String username, String password) async {
+
+    return await http.post(
+      Uri.parse('$baseUrl/login'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "fullName": username, // must match backend
+        "password": password,
+      }),
+    );
+  }
 }
