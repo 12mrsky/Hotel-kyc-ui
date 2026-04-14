@@ -127,58 +127,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _authService = AuthService();
 
+  final _authService = AuthService();
   bool _isLoading = false;
 
-  String _selectedRole = "Select Role";
-
-  // 🔥 ROLE PICKER (BOTTOM SHEET)
-  void _showRolePicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text("Admin"),
-                onTap: () {
-                  setState(() => _selectedRole = "Admin");
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text("Police"),
-                onTap: () {
-                  setState(() => _selectedRole = "Police");
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text("User"),
-                onTap: () {
-                  setState(() => _selectedRole = "User");
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // ✅ ADD THIS
+  String _selectedRole = "User";
 
   void _handleRegister() async {
-    if (_selectedRole == "Select Role") {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select role")),
-      );
-      return;
-    }
-
     setState(() => _isLoading = true);
 
     try {
@@ -187,16 +143,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _emailController.text.trim(),
         _passController.text.trim(),
         _phoneController.text.trim(),
-        _selectedRole, // ✅ ROLE SENT
+        _selectedRole, // ✅ SEND ROLE
       );
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registration Successful! Please Login.")),
+          const SnackBar(content: Text("Registration Successful!")),
         );
         Navigator.pop(context);
       } else {
-        print(response.body); // 🔥 DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error: ${response.body}")),
         );
@@ -217,38 +172,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: CustomPaint(
         painter: WavePainter(),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
+          padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 150),
+
               const Text(
                 "REGISTER",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF4A90E2),
-                  letterSpacing: 1.5,
                 ),
               ),
+
               const SizedBox(height: 30),
 
               TextField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: "Full Name"),
               ),
+
               const SizedBox(height: 10),
 
               TextField(
                 controller: _phoneController,
                 decoration: const InputDecoration(labelText: "Phone Number"),
               ),
+
               const SizedBox(height: 10),
 
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: "Email"),
               ),
+
               const SizedBox(height: 10),
 
               TextField(
@@ -256,21 +215,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: const InputDecoration(labelText: "Password"),
                 obscureText: true,
               ),
-              const SizedBox(height: 10),
 
-              // 🔥 ROLE FIELD (CLICKABLE INPUT STYLE)
-              GestureDetector(
-                onTap: _showRolePicker,
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: "Role",
-                    border: UnderlineInputBorder(),
-                  ),
-                  child: Text(
-                    _selectedRole,
-                    style: const TextStyle(fontSize: 16),
-                  ),
+              const SizedBox(height: 15),
+
+              // 🔥🔥🔥 DROPDOWN FIX HERE
+              DropdownButtonFormField<String>(
+                value: _selectedRole,
+                decoration: const InputDecoration(
+                  labelText: "Select Role",
+                  border: UnderlineInputBorder(),
                 ),
+                items: ["Admin", "User", "Police"]
+                    .map((role) => DropdownMenuItem(
+                          value: role,
+                          child: Text(role),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedRole = value!;
+                  });
+                },
               ),
 
               const SizedBox(height: 50),
@@ -289,7 +254,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
-                                elevation: 4,
                               ),
                               onPressed: _handleRegister,
                               child: const Text(
@@ -301,14 +265,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                           ),
+
                     const SizedBox(height: 10),
+
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text(
                         "Already have an account? Login",
                         style: TextStyle(color: Color(0xFF4A90E2)),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

@@ -1,0 +1,10 @@
+[33m454340c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m role dropdown + register fix
+[33m5029c67[m added role-based register + fixed auth + guest APIs
+[33mce82a8e[m added role-based register + fixed auth + guest APIs
+[33m1547029[m added role-based register + fixed auth + guest APIs
+[33m1ad6453[m fixed api integration
+[33m8f369ee[m final fix
+[33m0a452e4[m fixed api urls
+[33m5bf3352[m updated gitignore for flutter web build
+[33mb343f07[m added flutter web build
+[33md7bce25[m Initial commit - Hotel KYC Flutter App
