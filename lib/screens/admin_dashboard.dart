@@ -1048,9 +1048,11 @@ class HelplineScreen extends StatelessWidget {
 
 class AllHotelsListScreen extends StatelessWidget {
   const AllHotelsListScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final GuestService service = GuestService();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFF),
       appBar: AppBar(
@@ -1059,20 +1061,26 @@ class AllHotelsListScreen extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       body: FutureBuilder<List<dynamic>>(
-        // FIX: Call fetchAllHotels() instead of fetchGuestsRaw()
         future: service.fetchAllHotels(),
         builder: (context, snapshot) {
+
+          // ⏳ Loading
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // ❌ Error
           if (snapshot.hasError) {
-            return Center(child: Text("Error loading hotels"));
+            return const Center(child: Text("Error loading hotels"));
           }
 
-          final data = snapshot.data ?? [];
+          // ✅ Data
+          final data = snapshot.data;
 
-          if (data.isEmpty) {
+          // 🔥 DEBUG (VERY IMPORTANT)
+          debugPrint("HOTELS RESPONSE: $data");
+
+          if (data == null || data.isEmpty) {
             return const Center(child: Text("No hotels found."));
           }
 
@@ -1081,17 +1089,34 @@ class AllHotelsListScreen extends StatelessWidget {
             itemCount: data.length,
             itemBuilder: (context, index) {
               final h = data[index];
-              return _buildListTile(
-                context,
-                h['hotelName'] ?? "N/A",
-                "Owner: ${h['ownerName'] ?? 'Unknown'}", // Use ownerName from your JSON
-                Icons.hotel_rounded,
-                Colors.blue,
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => HotelDetailScreen(hotelData: h),
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 3,
+                child: ListTile(
+                  leading: const CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    child: Icon(Icons.hotel_rounded, color: Colors.white),
                   ),
+                  title: Text(
+                    h['hotelName'] ?? "No Name",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    "Owner: ${h['ownerName'] ?? 'Unknown'}",
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HotelDetailScreen(hotelData: h),
+                      ),
+                    );
+                  },
                 ),
               );
             },
