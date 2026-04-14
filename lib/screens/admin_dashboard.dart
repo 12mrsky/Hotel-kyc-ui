@@ -241,89 +241,149 @@ class _AdminDashboardState extends State<AdminDashboard>
   }
 
   // --- 3. ALL STATS CARDS ---
-  Widget _horizontalStatsRow(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      // Use this to ensure the Row takes up at least the full width of the screen
-      // so that MainAxisAlignment.center actually has an effect.
-      child: Container(
-        constraints: BoxConstraints(
-          minWidth: MediaQuery.of(context).size.width,
-        ),
-        child: Row(
-          // This aligns the cards to the center of the available width
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(width: 16), // Left padding
-            _statCard(
-              context,
-              Icons.hotel,
-              "Hotels",
-              "12",
-              "Registered",
-              Colors.blue,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const AllHotelsListScreen(),
-                  ),
-                );
-              },
-            ),
-            _statCard(
-              context,
-              Icons.bar_chart,
-              "Guests",
-              "145",
-              "Live Data",
-              Colors.green,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const HotelWiseGuestSelection(),
-                  ),
-                );
-              },
-              isLive: true,
-            ),
-            _statCard(
-              context,
-              Icons.assignment_outlined,
-              "KYC",
-              "04",
-              "Hotel Reg",
-              Colors.orange,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const HotelRegistrationScreen(),
-                  ),
-                );
-              },
-            ),
-            _statCard(
-              context,
-              Icons.security,
-              "Police",
-              "03",
-              "Alerts",
-              Colors.indigo,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const FlaggedUsersScreen()),
-                );
-              },
-            ),
-            const SizedBox(width: 16), // Right padding
-          ],
-        ),
+Widget _horizontalStatsRow(BuildContext context) {
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Container(
+      constraints: BoxConstraints(
+        minWidth: MediaQuery.of(context).size.width,
       ),
-    );
-  }
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(width: 16),
+
+          // ✅ HOTELS
+          FutureBuilder<List<dynamic>>(
+            future: service.fetchAllHotels(),
+            builder: (context, snapshot) {
+              String count = "0";
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                count = "...";
+              } else if (snapshot.hasData) {
+                count = snapshot.data!.length.toString();
+              }
+
+              return _statCard(
+                context,
+                Icons.hotel,
+                "Hotels",
+                count,
+                "Registered",
+                Colors.blue,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AllHotelsListScreen(),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
+          // ✅ GUESTS
+          FutureBuilder<List<dynamic>>(
+            future: service.fetchGuestsRaw(),
+            builder: (context, snapshot) {
+              String count = "0";
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                count = "...";
+              } else if (snapshot.hasData) {
+                count = snapshot.data!.length.toString();
+              }
+
+              return _statCard(
+                context,
+                Icons.bar_chart,
+                "Guests",
+                count,
+                "Live Data",
+                Colors.green,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const HotelWiseGuestSelection(),
+                    ),
+                  );
+                },
+                isLive: true,
+              );
+            },
+          ),
+
+          // ✅ KYC
+          FutureBuilder<List<dynamic>>(
+            future: service.fetchAllHotels(),
+            builder: (context, snapshot) {
+              String count = "0";
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                count = "...";
+              } else if (snapshot.hasData) {
+                count = snapshot.data!.length.toString();
+              }
+
+              return _statCard(
+                context,
+                Icons.assignment_outlined,
+                "KYC",
+                count,
+                "Hotel Reg",
+                Colors.orange,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const HotelRegistrationScreen(),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
+          // ✅ POLICE
+          FutureBuilder<List<dynamic>>(
+            future: service.fetchFlaggedGuests(),
+            builder: (context, snapshot) {
+              String count = "0";
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                count = "...";
+              } else if (snapshot.hasData) {
+                count = snapshot.data!.length.toString();
+              }
+
+              return _statCard(
+                context,
+                Icons.security,
+                "Police",
+                count,
+                "Alerts",
+                Colors.indigo,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FlaggedUsersScreen(),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
+          const SizedBox(width: 16),
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _statCard(
     BuildContext context,

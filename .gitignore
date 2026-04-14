@@ -6,13 +6,11 @@
 .pub-cache/
 .pub/
 
-# 🔥 IMPORTANT FIX
-/build/
-!/build/web/**
-!/build/web/
+# ✅ CORRECT FIX (REMOVE build completely)
+build/
 
 # Coverage
-/coverage/
+coverage/
 
 # Symbolication related
 app.*.symbols
