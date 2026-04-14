@@ -195,7 +195,8 @@ import 'api_service.dart';
 class GuestService {
 
   // ✅ FIXED: Use ApiService base URL + /Guest
-  static String get baseUrl => "${ApiService.baseUrl}/Guest";
+  static const String baseUrl =
+    "https://hotel-kyc-api22.onrender.com/api/Guest";
 
   // --- 1. REGISTER GUEST (POST) ---
   Future<http.Response> registerGuest(Map<String, dynamic> data) async {
