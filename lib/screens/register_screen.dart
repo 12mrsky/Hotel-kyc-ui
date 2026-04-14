@@ -131,10 +131,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool _isLoading = false;
 
-  // ✅ ROLE
-  String _selectedRole = "Hotel";
+  String _selectedRole = "Select Role";
+
+  // 🔥 ROLE PICKER (POPUP LIKE YOUR IMAGE)
+  void _showRolePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text("Admin"),
+                onTap: () {
+                  setState(() => _selectedRole = "Admin");
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text("Police"),
+                onTap: () {
+                  setState(() => _selectedRole = "Police");
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text("Hotel"),
+                onTap: () {
+                  setState(() => _selectedRole = "Hotel");
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   void _handleRegister() async {
+    if (_selectedRole == "Select Role") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select role")),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
@@ -143,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _emailController.text.trim(),
         _passController.text.trim(),
         _phoneController.text.trim(),
-        _selectedRole, // ✅ send role
+        _selectedRole,
       );
 
       if (response.statusCode == 200) {
@@ -213,23 +257,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 10),
 
-              // ✅ ROLE FIELD (looks like input, no UI break)
-              DropdownButtonFormField<String>(
-                value: _selectedRole,
-                decoration: const InputDecoration(
-                  labelText: "Role",
-                  border: UnderlineInputBorder(),
+              // 🔥 ROLE SELECT FIELD (CLICKABLE LIKE INPUT)
+              GestureDetector(
+                onTap: _showRolePicker,
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    labelText: "Role",
+                    border: UnderlineInputBorder(),
+                  ),
+                  child: Text(
+                    _selectedRole,
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
-                items: const [
-                  DropdownMenuItem(value: "Admin", child: Text("Admin")),
-                  DropdownMenuItem(value: "Police", child: Text("Police")),
-                  DropdownMenuItem(value: "Hotel", child: Text("Hotel")),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedRole = value!;
-                  });
-                },
               ),
 
               const SizedBox(height: 50),
