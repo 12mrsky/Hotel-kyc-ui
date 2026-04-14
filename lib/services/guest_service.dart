@@ -194,15 +194,19 @@ import 'api_service.dart';
 
 class GuestService {
 
-  // ✅ FIXED: Use ApiService base URL + /Guest
-  static const String baseUrl =
-    "https://hotel-kyc-api22.onrender.com/api/Guest";
+  // ✅ Guest API
+  static const String guestBaseUrl =
+      "https://hotel-kyc-api22.onrender.com/api/Guest";
+
+  // ✅ Hotel API (NEW - required for hotels)
+  static const String hotelBaseUrl =
+      "https://hotel-kyc-api22.onrender.com/api/Hotel";
 
   // --- 1. REGISTER GUEST (POST) ---
   Future<http.Response> registerGuest(Map<String, dynamic> data) async {
     try {
       return await http.post(
-        Uri.parse('$baseUrl/register-guest'),
+        Uri.parse('$guestBaseUrl/register-guest'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(data),
       );
@@ -215,7 +219,13 @@ class GuestService {
   // --- 2. FETCH FLAGGED GUESTS (GET) ---
   Future<List<dynamic>> fetchFlaggedGuests() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/flagged-guests'));
+      final response = await http.get(
+        Uri.parse('$guestBaseUrl/flagged-guests'),
+      );
+
+      debugPrint("Flagged Guests Status: ${response.statusCode}");
+      debugPrint("Flagged Guests Response: ${response.body}");
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -226,12 +236,16 @@ class GuestService {
     }
   }
 
-  // --- 3. FETCH ALL HOTELS (GET) ---
+  // --- 3. FETCH ALL HOTELS (FIXED 🔥) ---
   Future<List<dynamic>> fetchAllHotels() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/all-registered-hotels'),
+        Uri.parse('$hotelBaseUrl/all'), // ✅ FIXED API
       );
+
+      debugPrint("Hotels Status: ${response.statusCode}");
+      debugPrint("Hotels Response: ${response.body}");
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -245,10 +259,13 @@ class GuestService {
   // --- 4. FETCH GUESTS BY HOTEL ---
   Future<List<dynamic>> fetchGuestsByHotel(int hotelId) async {
     try {
-      // ✅ FIX: your backend endpoint is /by-hotel/{id}
       final response = await http.get(
-        Uri.parse('$baseUrl/by-hotel/$hotelId'),
+        Uri.parse('$guestBaseUrl/by-hotel/$hotelId'),
       );
+
+      debugPrint("Guests By Hotel Status: ${response.statusCode}");
+      debugPrint("Guests By Hotel Response: ${response.body}");
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -262,7 +279,13 @@ class GuestService {
   // --- 5. FETCH ALL GUESTS RAW ---
   Future<List<dynamic>> fetchGuestsRaw() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/all-guests'));
+      final response = await http.get(
+        Uri.parse('$guestBaseUrl/all-guests'),
+      );
+
+      debugPrint("Guests Raw Status: ${response.statusCode}");
+      debugPrint("Guests Raw Response: ${response.body}");
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -276,7 +299,13 @@ class GuestService {
   // --- 6. FETCH ALL GUESTS (MODEL) ---
   Future<List<Guest>> fetchGuests() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/all-guests'));
+      final response = await http.get(
+        Uri.parse('$guestBaseUrl/all-guests'),
+      );
+
+      debugPrint("Guests Status: ${response.statusCode}");
+      debugPrint("Guests Response: ${response.body}");
+
       if (response.statusCode == 200) {
         List jsonResponse = json.decode(response.body);
         return jsonResponse.map((data) => Guest.fromJson(data)).toList();
