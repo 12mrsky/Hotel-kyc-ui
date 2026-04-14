@@ -133,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String _selectedRole = "Select Role";
 
-  // 🔥 ROLE PICKER (POPUP LIKE YOUR IMAGE)
+  // 🔥 ROLE PICKER (BOTTOM SHEET)
   void _showRolePicker() {
     showModalBottomSheet(
       context: context,
@@ -158,9 +158,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               ListTile(
-                title: const Text("Hotel"),
+                title: const Text("User"),
                 onTap: () {
-                  setState(() => _selectedRole = "Hotel");
+                  setState(() => _selectedRole = "User");
                   Navigator.pop(context);
                 },
               ),
@@ -187,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _emailController.text.trim(),
         _passController.text.trim(),
         _phoneController.text.trim(),
-        _selectedRole,
+        _selectedRole, // ✅ ROLE SENT
       );
 
       if (response.statusCode == 200) {
@@ -196,8 +196,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
         Navigator.pop(context);
       } else {
+        print(response.body); // 🔥 DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registration Failed. Try again.")),
+          SnackBar(content: Text("Error: ${response.body}")),
         );
       }
     } catch (e) {
@@ -257,7 +258,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 10),
 
-              // 🔥 ROLE SELECT FIELD (CLICKABLE LIKE INPUT)
+              // 🔥 ROLE FIELD (CLICKABLE INPUT STYLE)
               GestureDetector(
                 onTap: _showRolePicker,
                 child: InputDecorator(
