@@ -1,13 +1,16 @@
 # Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
 
-# ✅ CORRECT FIX (REMOVE build completely)
+# ❌ Ignore build folder
 build/
+
+# ✅ BUT allow Flutter Web build for deployment
+!build/web/
+!build/web/**
 
 # Coverage
 coverage/
@@ -22,3 +25,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# IDE
+.vscode/
+.idea/
