@@ -281,33 +281,60 @@ class _PoliceDashboardState extends State<PoliceDashboard> {
 
   // --- 3. TOP STATS SECTION ---
   Widget _topStatsSection() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Operations Summary",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _statCard("Hotels", "12", Icons.business_rounded, Colors.blue),
-              _statCard(
-                "Alerts",
-                "03",
-                Icons.warning_amber_rounded,
-                Colors.red,
-              ),
-              _statCard("Live", "145", Icons.sensors_rounded, Colors.green),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  return Padding(
+    padding: const EdgeInsets.all(20),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Operations Summary",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 15),
+
+        FutureBuilder<List<dynamic>>(
+          future: _service.fetchFlaggedGuests(),
+          builder: (context, snapshot) {
+            int alertCount = 1; // ✅ default 1
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              alertCount = 1;
+            } else if (snapshot.hasData) {
+              alertCount =
+                  snapshot.data!.isEmpty ? 1 : snapshot.data!.length;
+            }
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _statCard(
+                  "Hotels",
+                  "12", // ⚠️ unchanged (as you said no logic change)
+                  Icons.business_rounded,
+                  Colors.blue,
+                ),
+
+                _statCard(
+                  "Alerts",
+                  alertCount.toString(), // ✅ dynamic
+                  Icons.warning_amber_rounded,
+                  Colors.red,
+                ),
+
+                _statCard(
+                  "Live",
+                  "145", // unchanged
+                  Icons.sensors_rounded,
+                  Colors.green,
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _statCard(String label, String val, IconData icon, Color color) {
     return Container(
