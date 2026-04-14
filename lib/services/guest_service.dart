@@ -194,13 +194,10 @@ import 'api_service.dart';
 
 class GuestService {
 
-  // OLD (keep commented)
-  // static const String baseUrl = "https://localhost:7295/api/Guest";
-
-  // NEW ✅
+  // ✅ FIXED: Use ApiService base URL + /Guest
   static String get baseUrl => "${ApiService.baseUrl}/Guest";
 
-  // REGISTER GUEST
+  // --- 1. REGISTER GUEST (POST) ---
   Future<http.Response> registerGuest(Map<String, dynamic> data) async {
     try {
       return await http.post(
@@ -210,11 +207,11 @@ class GuestService {
       );
     } catch (e) {
       debugPrint("Register Guest Error: $e");
-      return http.Response(jsonEncode({"message": "Error"}), 500);
+      return http.Response(jsonEncode({"message": "Error: $e"}), 500);
     }
   }
 
-  // FLAGGED GUESTS
+  // --- 2. FETCH FLAGGED GUESTS (GET) ---
   Future<List<dynamic>> fetchFlaggedGuests() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/flagged-guests'));
@@ -228,7 +225,7 @@ class GuestService {
     }
   }
 
-  // ALL HOTELS
+  // --- 3. FETCH ALL HOTELS (GET) ---
   Future<List<dynamic>> fetchAllHotels() async {
     try {
       final response = await http.get(
@@ -244,11 +241,12 @@ class GuestService {
     }
   }
 
-  // GUESTS BY HOTEL
+  // --- 4. FETCH GUESTS BY HOTEL ---
   Future<List<dynamic>> fetchGuestsByHotel(int hotelId) async {
     try {
+      // ✅ FIX: your backend endpoint is /by-hotel/{id}
       final response = await http.get(
-        Uri.parse('$baseUrl/hotel-guests/$hotelId'),
+        Uri.parse('$baseUrl/by-hotel/$hotelId'),
       );
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -260,12 +258,10 @@ class GuestService {
     }
   }
 
-  // ✅ IMPORTANT FIX (THIS WAS MISSING)
+  // --- 5. FETCH ALL GUESTS RAW ---
   Future<List<dynamic>> fetchGuestsRaw() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/all-guests'),
-      );
+      final response = await http.get(Uri.parse('$baseUrl/all-guests'));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -276,15 +272,13 @@ class GuestService {
     }
   }
 
-  // MODEL BASED
+  // --- 6. FETCH ALL GUESTS (MODEL) ---
   Future<List<Guest>> fetchGuests() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/all-guests'),
-      );
+      final response = await http.get(Uri.parse('$baseUrl/all-guests'));
       if (response.statusCode == 200) {
         List jsonResponse = json.decode(response.body);
-        return jsonResponse.map((e) => Guest.fromJson(e)).toList();
+        return jsonResponse.map((data) => Guest.fromJson(data)).toList();
       }
       return [];
     } catch (e) {

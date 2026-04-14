@@ -42,23 +42,20 @@
 
 
 
-
-
-
-  import 'dart:convert';
+// my old code (keep commented)
+import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'api_service.dart';
 
-class ApiService {
-  // NEW (Render backend)
+class AuthService {
   static const String baseUrl =
-      "https://hotel-kyc-api22.onrender.com/api";
+      "https://hotel-kyc-api22.onrender.com/api/Auth";
 
   Future<http.Response> register(
     String name,
     String email,
     String password,
     String phone,
+    String role,
   ) async {
     return await http.post(
       Uri.parse('$baseUrl/register'),
@@ -66,8 +63,9 @@ class ApiService {
       body: jsonEncode({
         "fullName": name,
         "email": email,
-        "password": password, // Must match your C# RegisterRequest property
+        "password": password,
         "phoneNumber": phone,
+        "role": role, // ✅ IMPORTANT FIX
       }),
     );
   }
@@ -76,7 +74,10 @@ class ApiService {
     return await http.post(
       Uri.parse('$baseUrl/login'),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email, "password": password}),
+      body: jsonEncode({
+        "email": email,
+        "password": password,
+      }),
     );
   }
 }
