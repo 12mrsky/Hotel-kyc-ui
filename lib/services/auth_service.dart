@@ -35,12 +35,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  // ✅ FIXED: Use deployed backend instead of localhost
   static const String baseUrl =
       "https://hotel-kyc-api22.onrender.com/api/Auth";
 
+  // ✅ REGISTER
   Future<http.Response> register(
-      String name, String email, String password, String phone) async {
+    String name,
+    String email,
+    String password,
+    String phone,
+    String role,
+  ) async {
     return await http.post(
       Uri.parse('$baseUrl/register'),
       headers: {"Content-Type": "application/json"},
@@ -49,18 +54,18 @@ class AuthService {
         "email": email,
         "password": password,
         "phoneNumber": phone,
-        String role,
+        "role": role, // ✅ CORRECT
       }),
     );
   }
 
-  // ✅ LOGIN (same as your working code)
-  Future<http.Response> login(String username, String password) async {
+  // ✅ LOGIN
+  Future<http.Response> login(String email, String password) async {
     return await http.post(
       Uri.parse('$baseUrl/login'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "fullName": username, // must match backend
+        "email": email,
         "password": password,
       }),
     );
